@@ -62,6 +62,7 @@ API runs at: http://localhost:5000/api
 
 ## Notes
 
+- Frontend: https://github.com/brijesh-0/job-board-frontend
 - Resumes: PDF only, max 5MB
 - No real-time updates (refresh to see changes)
 - No password reset yet
