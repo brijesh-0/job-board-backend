@@ -1,4 +1,5 @@
-import express, { Application } from "express";
+// src/app.ts
+import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
@@ -10,10 +11,16 @@ import applicationRoutes from "./routes/application.routes";
 import uploadRoutes from "./routes/upload.routes";
 import { errorHandler } from "./middleware/errorHandler.middleware";
 
-export const createApp = (): Application => {
+// Create the Express application
+const createApp = (): Application => {
   const app = express();
 
+  // Security & performance middleware
   app.use(helmet());
+  app.use(compression());
+  app.use(cookieParser());
+
+  // CORS
   app.use(
     cors({
       origin: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -21,25 +28,38 @@ export const createApp = (): Application => {
     }),
   );
 
-  app.use(cookieParser());
-
   // Body parsing
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-  app.use(compression());
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-  // Routes
+  // API Routes
   app.use("/api/auth", authRoutes);
   app.use("/api/jobs", jobRoutes);
   app.use("/api/applications", applicationRoutes);
   app.use("/api/uploads", uploadRoutes);
 
-  // Health check
-  app.get("/health", (req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  // Health check (Vercel also pings this automatically)
+  app.get("/health", (_req: Request, res: Response) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
-  app.use(errorHandler);
+  // Global error handler (must be last)
+  app.use(
+    errorHandler as (
+      err: any,
+      req: Request,
+      res: Response,
+      next: NextFunction,
+    ) => void,
+  );
 
   return app;
 };
+
+// Export a ready-to-use instance — this is what Vercel will import
+// (You can still keep createApp() if some test/utils need it)
+const app = createApp();
+export default app;
+
+// Also keep the factory export for flexibility (optional)
+export { createApp };

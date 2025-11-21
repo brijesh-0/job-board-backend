@@ -1,7 +1,12 @@
 {
   "functions": {
-    "api/index.ts": {
-      "runtime": "nodejs22.x"
+    "index.ts": { "runtime": "nodejs22.x" },
+    "api/index.ts": { "runtime": "nodejs22.x" }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
     }
-  }
+  ]
 }
