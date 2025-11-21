@@ -7,7 +7,7 @@ Built with **Node.js + Express + TypeScript + MongoDB**.
 
 - Secure login (JWT + HttpOnly cookies)
 - Two roles: Candidate & Employer
-- Post & manage jobs
+- Post & Manage Jobs
 - Apply with resume (PDF upload via Cloudinary)
 - Track application status
 - Full-text job search
